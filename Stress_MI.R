@@ -215,3 +215,10 @@ for (i in 1:length(langs.include)){
 
 # save aligned datafile
 save.image(file='Stress_aligned.RData')
+
+
+# alphas
+psych::alpha(data[,items.pss],check.keys=TRUE)
+psych::alpha(data[,items.sps],check.keys=TRUE)
+psych::alpha(data[,items.identity],check.keys=TRUE)
+psych::alpha(data[,items.resilience],check.keys=TRUE)
