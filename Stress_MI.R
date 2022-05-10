@@ -243,6 +243,32 @@ for (i in 1:length(langs.include)){
   }
 }
 
+
+# filtering by country n >= 30
+country.30 <- table(data.aligned$residing_country) >= 30
+
+n.country <- table(data.aligned$residing_country)
+list.country <- labels(n.country)[[1]]
+country.include <- list.country[n.country>=30]
+n.include.c <- n.country[n.country>=30]
+
+# extract data
+for (i in 1:length(country.include)){
+  if (i == 1){
+    data.filtered <- data.aligned[(data.aligned$residing_country == 
+                                    country.include[i]) & !is.na(
+                                      data.aligned$residing_country
+                                    ),]
+  }else{
+    current <- data.aligned[(data.aligned$residing_country == country.include[i])
+                            & !is.na(
+                              data.aligned$residing_country
+                            ),]
+    data.filtered <- rbind(data.filtered,current)
+  }
+}
+
+
 # save aligned datafile
 save.image(file='Stress_aligned.RData')
 
