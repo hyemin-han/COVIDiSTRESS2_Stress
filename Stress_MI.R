@@ -27,6 +27,8 @@ items.sps <- colnames(data)[76:78]
 items.identity <- colnames(data)[173:176]
 items.resilience <- colnames(data)[120:125]
 items.ps <- colnames(data)[58:61]
+items.ss <- c('secondary_stressors__1','secondary_stressors__2','secondary_stressors__3',
+                'secondary_stressors__4')
 
 # reverse coded items
 data[,items.resilience[2]] <- 8-data[,items.resilience[2]]
@@ -187,6 +189,28 @@ mod1.ps$es.invariance['R2',]
 #loadings intercepts 
 # 0.9574455  0.9861105     good
 
+#### secondary stressors
+cfa.model.ss <- 'SS =~ secondary_stressors__1 + secondary_stressors__2+secondary_stressors__3+
+  secondary_stressors__4'
+cfa.whole.ss<- cfa(model=cfa.model.ss,data=data.mi,estimator='WLSMV', group = 
+                     'UserLanguage')
+fitMeasures(cfa.whole.ss)[fits]
+# msea.scaled         srmr   cfi.scaled   tli.scaled 
+#  0.1042919    0.0309894    0.9678559    0.9035678   not good
+
+# measurement alignment test
+# extract parameters
+par.ss <- invariance_alignment_cfa_config(dat = data.mi[,items.ss], 
+                                          group = data.mi$UserLanguage)
+# do alignment
+mod1.ss <- invariance.alignment(lambda = par.ss$lambda, nu =
+                                  par.ss$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
+# test performance
+mod1.ss$es.invariance['R2',]
+#loadings intercepts 
+# 0.9746064  0.9810768     good
+
+
 #####
 # factor score calculation
 
@@ -210,11 +234,15 @@ for (i in 1:length(langs.include)){
     F.ps <- aligned.factor.scores(mod1.ps$lambda.aligned[i,],
                                   mod1.ps$nu.aligned[i,],
                                   data.mi[data.mi$UserLanguage==langs.include[i],items.ps])
+    F.ss <- aligned.factor.scores(mod1.ss$lambda.aligned[i,],
+                                  mod1.ss$nu.aligned[i,],
+                                  data.mi[data.mi$UserLanguage==langs.include[i],items.ss])
     data.aligned$pss <- t(F.pss)
     data.aligned$sps <- t(F.sps)
     data.aligned$identity <- t(F.id)
     data.aligned$resilience <- t(F.id)
     data.aligned$primary_stressor_avg <- t(F.ps)
+    data.aligned$secondary <- t(F.ss)
   }else
   {
     # bind
@@ -234,11 +262,15 @@ for (i in 1:length(langs.include)){
     F.ps <- aligned.factor.scores(mod1.ps$lambda.aligned[i,],
                                   mod1.ps$nu.aligned[i,],
                                   current[,items.ps])
+    F.ss <- aligned.factor.scores(mod1.ss$lambda.aligned[i,],
+                                  mod1.ss$nu.aligned[i,],
+                                  current[,items.ss])
     current$pss <- t(F.pss)
     current$sps <- t(F.sps)
     current$identity <- t(F.id)
     current$resilience <- t(F.rs)
     current$primary_stressor_avg <- t(F.ps)
+    current$secondary <- t(F.ss)
     data.aligned <- rbind(data.aligned,current)
   }
 }
@@ -279,3 +311,4 @@ psych::alpha(data[,items.sps],check.keys=TRUE)
 psych::alpha(data[,items.identity],check.keys=TRUE)
 psych::alpha(data[,items.resilience],check.keys=TRUE)
 psych::alpha(data[,items.ps],check.keys=TRUE)
+psych::alpha(data[,items.ss],check.keys=TRUE)
