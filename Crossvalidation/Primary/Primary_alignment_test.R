@@ -69,14 +69,15 @@ fitMeasures(cfa.metric.sps)[fits]
 
 # extract parameters
 par.sps <- invariance_alignment_cfa_config(dat = data.mi[,items.PSUP], 
-                                            group = data.mi$UserLanguage)
+                                            group = data.mi$UserLanguage,
+                                           estimator='WLSMV')
 # do alignment
 mod1.sps <- invariance.alignment(lambda = par.sps$lambda, nu =
                                    par.sps$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
 # test performance
 mod1.sps$es.invariance['R2',]
 #  loadings intercepts 
-#  0.9574455  0.9861105  
+#  0.9428244  0.9834677   
 # all ≥ 75%. well addressed.
 
 # monte carlo. IRT test (optional)
@@ -123,7 +124,8 @@ simulation_CLE <- function(times,n,data,n.include,seed=1){
       par.cle$nu,par.cle$lambda,err_var.cle,mu,sigma,N
     )
     par.simul <- invariance_alignment_cfa_config(dat = dat[,compliance], 
-                                               group = dat$group)
+                                               group = dat$group,
+                                               estimator='WLSMV')
     mod1.simul <- invariance.alignment(lambda = par.simul$lambda, nu =
                                          par.simul$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
     

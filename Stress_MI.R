@@ -72,7 +72,8 @@ fitMeasures(cfa.whole.pss)[fits]
 # measurement alignment test
 # extract parameters
 par.pss <- invariance_alignment_cfa_config(dat = data.mi[,items.pss], 
-                                       group = data.mi$UserLanguage)
+                                       group = data.mi$UserLanguage,
+                                       estimator='WLSMV')
 # do alignment
 mod1.pss <- invariance.alignment(lambda = par.pss$lambda, nu =
                                    par.pss$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
@@ -105,7 +106,8 @@ fitMeasures(cfa.metric.sps)[fits]
 # measurement alignment test
 # extract parameters
 par.sps <- invariance_alignment_cfa_config(dat = data.mi[,items.sps], 
-                                           group = data.mi$UserLanguage)
+                                           group = data.mi$UserLanguage,
+                                           estimator='WLSMV')
 # do alignment
 mod1.sps <- invariance.alignment(lambda = par.sps$lambda, nu =
                                    par.sps$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
@@ -131,7 +133,8 @@ fitMeasures(cfa.whole.identity)[fits]
 # measurement alignment test
 # extract parameters
 par.identity <- invariance_alignment_cfa_config(dat = data.mi[,items.identity], 
-                                           group = data.mi$UserLanguage)
+                                           group = data.mi$UserLanguage,
+                                           estimator='WLSMV')
 # do alignment
 mod1.identity <- invariance.alignment(lambda = par.identity$lambda, nu =
                                         par.identity$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
@@ -157,7 +160,8 @@ fitMeasures(cfa.whole.resilience)[fits]
 # measurement alignment test
 # extract parameters
 par.resilience <- invariance_alignment_cfa_config(dat = data.mi[,items.resilience], 
-                                                group = data.mi$UserLanguage)
+                                                group = data.mi$UserLanguage,
+                                                estimator='WLSMV')
 # do alignment
 mod1.resilience <- invariance.alignment(lambda = par.resilience$lambda, nu =
                                         par.resilience$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
@@ -180,7 +184,8 @@ fitMeasures(cfa.whole.ps)[fits]
 # measurement alignment test
 # extract parameters
 par.ps <- invariance_alignment_cfa_config(dat = data.mi[,items.ps], 
-                                                  group = data.mi$UserLanguage)
+                                                  group = data.mi$UserLanguage,
+                                          estimator='WLSMV')
 # do alignment
 mod1.ps <- invariance.alignment(lambda = par.ps$lambda, nu =
                                   par.ps$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
@@ -201,7 +206,8 @@ fitMeasures(cfa.whole.ss)[fits]
 # measurement alignment test
 # extract parameters
 par.ss <- invariance_alignment_cfa_config(dat = data.mi[,items.ss], 
-                                          group = data.mi$UserLanguage)
+                                          group = data.mi$UserLanguage,
+                                          estimator='WLSMV')
 # do alignment
 mod1.ss <- invariance.alignment(lambda = par.ss$lambda, nu =
                                   par.ss$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))

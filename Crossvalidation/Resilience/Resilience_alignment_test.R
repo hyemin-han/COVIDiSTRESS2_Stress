@@ -31,6 +31,10 @@ cfa.model.PSUP <-'RES =~ resilience_1 + resilience_2+resilience_3+
 #load data
 data<-read.csv('../../Final_COVIDiSTRESS_Vol2_cleaned.csv')
 
+# reverse
+data$resilience_2 <- 8-data$resilience_2
+data$resilience_4 <- 8-data$resilience_4
+data$resilience_6 <- 8-data$resilience_6
 
 #extract languages with n>=100
 n.langs <- table(data$UserLanguage)
