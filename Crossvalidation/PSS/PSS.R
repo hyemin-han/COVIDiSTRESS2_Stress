@@ -147,7 +147,7 @@ simulation_CLE <- function(times,n,data,n.include,seed=1){
     
     # paramester estimation
     #cfa.test <-cfa(cfa.model.simul,dat,estimator='WLSMV',group='group')
-    i#pars <- parameterEstimates(cfa.test)
+    #ipars <- parameterEstimates(cfa.test)
     
     mod1.simul <- invariance.alignment(lambda = par.simul$lambda, nu =
                                          par.simul$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25),
