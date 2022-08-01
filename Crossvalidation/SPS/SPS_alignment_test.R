@@ -20,10 +20,10 @@ aligned.factor.scores <- function(lambda,nu,y){
 #extract compliance_related variable names
 # new model: without compliance_3 and 7
 
-items.PSUP <- c('resilience_1','resilience_2',
-                'resilience_3','resilience_4','resilience_5','resilience_6')
-cfa.model.PSUP <-'RES =~ resilience_1 + resilience_2+resilience_3+
-  resilience_4+resilience_5+resilience_6'
+items.PSUP <- c('perceived_support_1_midneutral','perceived_support_2_midneutral',
+                'perceived_support_3_midneutral')
+cfa.model.PSUP <-'RES =~ perceived_support_1_midneutral + 
+  perceived_support_2_midneutral+perceived_support_3_midneutral'
 
 
 #Load the cleaned cvs file
@@ -31,10 +31,6 @@ cfa.model.PSUP <-'RES =~ resilience_1 + resilience_2+resilience_3+
 #load data
 data<-read.csv('../../Final_COVIDiSTRESS_Vol2_cleaned.csv')
 
-# reverse
-data$resilience_2 <- 8-data$resilience_2
-data$resilience_4 <- 8-data$resilience_4
-data$resilience_6 <- 8-data$resilience_6
 
 #extract languages with n>=100
 n.langs <- table(data$UserLanguage)
@@ -63,34 +59,37 @@ fits <- c('rmsea.scaled','srmr','cfi.scaled','tli.scaled')
 cfa.whole.sps <-cfa(model=cfa.model.PSUP, data=data.mi,estimator='WLSMV', group=
                       'UserLanguage')
 fitMeasures(cfa.whole.sps)[fits]
-#msea.sclaed       srmr   cfi.scaled    tli.scaled
-#  0.09295767   0.03737383   0.95253039   0.92088398 
-# mediocre configural invariance
+# Perfect
 
 # then metric
 cfa.metric.sps <-cfa(model=cfa.model.PSUP, data=data.mi,estimator='WLSMV', group=
                       'UserLanguage',group.equal ='loadings')
 fitMeasures(cfa.metric.sps)[fits]
-#rmsea.scaled         srmr   cfi.scaled   tli.scaled 
-# 0.10594670   0.07134785   0.90530425   0.89722942
-# unacceptable. Alignment.
+# mediocre  0.05463576   0.02031419   0.98934655   0.98342797 
+
+# scalar test just in case
+cfa.scalar.sps <-cfa(model=cfa.model.PSUP, data=data.mi,estimator='WLSMV', group=
+                       'UserLanguage',group.equal =c('loadings','intercepts'))
+fitMeasures(cfa.scalar.sps)[fits]
+# not good   0.11625186   0.04845178   0.90353583   0.92497231
 
 # extract parameters
 par.sps <- invariance_alignment_cfa_config(dat = data.mi[,items.PSUP], 
-                                            group = data.mi$UserLanguage)
+                                            group = data.mi$UserLanguage,
+                                           estimator='WLSMV')
 # do alignment
 mod1.sps <- invariance.alignment(lambda = par.sps$lambda, nu =
                                    par.sps$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
 # test performance
 mod1.sps$es.invariance['R2',]
 #  loadings intercepts 
-#  0.9799195  0.9967562  
+#  0.9924783  0.9987810   
 # all ≥ 75%. well addressed.
 
 # monte carlo. IRT test (optional)
 #--- find parameter constraints for prespecified tolerance
-cmod1.sps <- sirt::invariance_alignment_constraints(model=mod1.sps, nu_parm_tol=.6,
-                                                lambda_parm_tol=.6 )
+cmod1.sps <- sirt::invariance_alignment_constraints(model=mod1.sps, nu_parm_tol=.4,
+                                                lambda_parm_tol=.4 )
 
 par.cle <- par.sps
 
@@ -98,8 +97,8 @@ par.cle <- par.sps
 simulation_CLE <- function(times,n,data,n.include,seed=1){
   # get data
   data.mi <- data
-  items.PSUP <- c('resilience_1','resilience_2',
-                  'resilience_3','resilience_4','resilience_5','resilience_6')
+  items.PSUP <- c('perceived_support_1_midneutral','perceived_support_2_midneutral',
+                'perceived_support_3_midneutral')
   compliance <- items.PSUP
   
   # list for return
@@ -113,7 +112,7 @@ simulation_CLE <- function(times,n,data,n.include,seed=1){
   for (j in 1:times){
     set.seed(seed)
     G <- n.include # groups
-    I <- 6 # items
+    I <- 3 # items
     
     # lambda, nu, and error_var
     err_var.cle <- matrix(1, nrow=G,ncol=I)
@@ -131,14 +130,14 @@ simulation_CLE <- function(times,n,data,n.include,seed=1){
       par.cle$nu,par.cle$lambda,err_var.cle,mu,sigma,N
     )
     par.simul <- invariance_alignment_cfa_config(dat = dat[,compliance], 
-                                               group = dat$group, estimator=
-                                                 'WLSMV')
+                                               group = dat$group,
+                                               estimator='WLSMV')
     mod1.simul <- invariance.alignment(lambda = par.simul$lambda, nu =
                                          par.simul$nu, align.scale = c(0.2, 0.4), align.pow = c(0.25, 0.25))
     
     # true vs aligned scores
-    cfa.model.PSUP <-'PSUP =~ resilience_1 + 
-resilience_2 + resilience_3 +resilience_4+resilience_5+resilience_6'
+    cfa.model.PSUP <-'PSUP =~ perceived_support_1_midneutral + 
+  perceived_support_2_midneutral+perceived_support_3_midneutral'
     cfa.model.simul <- cfa.model.PSUP
     cfa.simul <- cfa(cfa.model.simul,dat,estimator='WLSMV',group='group',
                      group.equal=c('loadings','intercepts'),meanstructure=T)
