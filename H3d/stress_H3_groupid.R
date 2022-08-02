@@ -184,3 +184,4 @@ library(bayestestR)
 bayestestR::mediation(med.res.1)
 
 save.image('Vaccine_H3_groupid.RData')
+
