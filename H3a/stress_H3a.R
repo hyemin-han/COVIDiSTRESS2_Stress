@@ -3,11 +3,12 @@
 library(lmerTest)
 library(brms)
 library(EMAtools)
+library(sjstats)
 
 # H1
 
 # load dataset
-load('Stress_aligned.RData')
+load('../Stress_aligned.RData')
 
 # H1 pss / resilience ~ primary
 
@@ -60,6 +61,12 @@ lmer.pss.1 <- lmer (pss ~ primary_stressor_avg + gender + education + work_locat
                     data=data.filtered)
 EMAtools::lme.dscore(lmer.pss.1,data.filtered,'lme4')
 
+# ICC calculation
+lmer.pss.2 <- lmer (pss ~ primary_stressor_avg + gender + education + work_location + age+
+                      SSS_faml+ relationship_status+
+                      (1+primary_stressor_avg|residing_country),
+                    data=data.filtered)
+performance::icc(lmer.pss.2)
 
 ######
 # resilience
@@ -108,6 +115,13 @@ lmer.res.1 <- lmer (resilience ~ primary_stressor_avg + gender + education + wor
                       (1|residing_country),
                     data=data.filtered)
 EMAtools::lme.dscore(lmer.res.1,data.filtered,'lme4')
+
+# icc test
+lmer.res.2 <- lmer (resilience ~ primary_stressor_avg + gender + education + work_location + age+
+                      SSS_faml+ relationship_status+
+                      (1+primary_stressor_avg|residing_country),
+                    data=data.filtered)
+performance::icc(lmer.res.2)
 
 # result save
 save.image(file='stress_H3a.RData')
