@@ -1,3 +1,5 @@
 
 *.RData
 *.RData
+*.RData
+Stress_aligned.RData

@@ -52,6 +52,13 @@ bf.main <- bayes_factor(pss.main.identity,pss.2)
 log(bf.int$bf[1])
 log(bf.main$bf[1])
 
+# only main effects matter
+# main effect test
+hypothesis (pss.main.identity, 'secondary > 0') # Inf
+hypothesis (pss.main.identity, 'identity < 0') # Inf
+# no significant interaction
+# however, higher group id decreases PSS independent from secondary stressor level
+
 ### H3d
 
 ## H3da
