@@ -68,6 +68,9 @@ lmer.pss.2 <- lmer (pss ~ primary_stressor_avg + gender + education + work_locat
                     data=data.filtered)
 performance::icc(lmer.pss.2)
 
+library(nlme)
+pss.conf <- confint(lmer.pss.2)
+
 ######
 # resilience
 
@@ -122,6 +125,8 @@ lmer.res.2 <- lmer (resilience ~ primary_stressor_avg + gender + education + wor
                       (1+primary_stressor_avg|residing_country),
                     data=data.filtered)
 performance::icc(lmer.res.2)
+
+res.conf <- confint(lmer.res.2)
 
 # result save
 save.image(file='stress_H3a.RData')
