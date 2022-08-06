@@ -52,12 +52,21 @@ bf.main <- bayes_factor(pss.main.identity,pss.2)
 log(bf.int$bf[1])
 log(bf.main$bf[1])
 
-# only main effects matter
+
 # main effect test
-hypothesis (pss.main.identity, 'secondary > 0') # Inf
-hypothesis (pss.main.identity, 'identity < 0') # Inf
-# no significant interaction
-# however, higher group id decreases PSS independent from secondary stressor level
+hypothesis (pss.identity, 'secondary > 0') # Inf
+hypothesis (pss.identity, 'identity < 0') # Inf
+hypothesis (pss.identity, 'secondary:identity < 0')
+
+# frequentist
+freq.pss.int <- lmer(pss ~ secondary*identity+ gender + education + work_location + age+
+                       SSS_faml+ relationship_status+
+                       (1+secondary+identity|residing_country),data.filtered)
+conf.pss <- confint(freq.pss.int)
+freq.pss.int.1 <- lmer(pss ~ secondary*identity+ gender + education + work_location + age+
+                       SSS_faml+ relationship_status+
+                       (1|residing_country),data.filtered)
+lme.dscore(freq.pss.int.1,data.filtered,'lme4')
 
 ### H3d
 
@@ -93,6 +102,10 @@ bf.pss.id.21 <- bayes_factor(pss.id.2,pss.id.1)
 # 2 best
 hypothesis(pss.id.2,'identity<0')
 
+
+# only with the main effect of stressor
+
+
 # res
 res.id.0 <- brms::brm(resilience ~  gender + education + work_location + age+
                         SSS_faml+ relationship_status+
@@ -114,14 +127,46 @@ res.id.2 <- brms::brm(resilience ~ identity+ gender + education + work_location 
                       cores=4,chains=4, save_pars = save_pars(all = T),
                       sample_prior ='yes', seed=1660415,prior=prior.coef)
 
+
+res.2 <- brms::brm(resilience ~ secondary+ gender + education + work_location + age+
+                        SSS_faml+ relationship_status+
+                        (1+secondary|residing_country),
+                      data=data.filtered, family = gaussian(),
+                      cores=4,chains=4, save_pars = save_pars(all = T),
+                      sample_prior ='yes', seed=1660415,prior=prior.coef)
+res.int <- brms::brm(resilience ~ secondary*identity+ gender + education + work_location + age+
+                     SSS_faml+ relationship_status+
+                     (1+secondary+identity|residing_country),
+                   data=data.filtered, family = gaussian(),
+                   cores=4,chains=4, save_pars = save_pars(all = T),
+                   sample_prior ='yes', seed=1660415,prior=prior.coef)
+
 # bfs
-bf.res.id.10 <- bayes_factor(res.id.1,res.id.0)
-bf.res.id.20 <- bayes_factor(res.id.2,res.id.0)
-bf.res.id.21 <- bayes_factor(res.id.2,res.id.1)
+bf.res.int <- bayes_factor(res.int,res.2,log=T)
+
+# hypothesis
+hypothesis(res.int, 'secondary < 0')
+hypothesis(res.int, 'identity > 0')
+hypothesis(res.int, 'secondary:identity > 0')
+
+# bfs
+#bf.res.id.10 <- bayes_factor(res.id.1,res.id.0)
+#bf.res.id.20 <- bayes_factor(res.id.2,res.id.0)
+#bf.res.id.21 <- bayes_factor(res.id.2,res.id.1)
 
 # 1 best
-hypothesis(res.id.1,'identity>0')
+#hypothesis(res.id.1,'identity>0')
 
+
+# frequentist
+freq.res.int <- lmer(resilience ~ secondary*identity+ gender + education + work_location + age+
+  SSS_faml+ relationship_status+
+  (1+secondary+identity|residing_country),data.filtered)
+freq.res.int1 <- lmer(resilience ~ secondary*identity+ gender + education + work_location + age+
+                       SSS_faml+ relationship_status+
+                       (1|residing_country),data.filtered)
+lme.dscore(freq.res.int1,data.filtered,'lme4')
+conf.res <- confint(freq.res.int)
 
 ## H3db
 
