@@ -141,6 +141,13 @@ freq.pss.2 <- lmer(pss ~ secondary+ work_location + age+
                        SSS_faml+ relationship_status+ education+
                        (1+secondary|residing_country),
                      data=data.filtered)
+conft.pss.2<-confint(freq.pss.2)
+
+freq.pss.1 <- lmer(pss ~ secondary+ work_location + age+
+                     SSS_faml+ relationship_status+ education+
+                     (1|residing_country),
+                   data=data.filtered)
+EMAtools::lme.dscore(freq.pss.1,data.filtered,'lme4')
 
 # ICC
 performance::icc(freq.pss.2)
@@ -190,6 +197,7 @@ res.20 <- bayes_factor(res.2, res.0)
 res.21 <- bayes_factor(res.2,res.1)
 
 # 1 is better, so random intercept model will be used
+hypothesis(res.1, 'secondary < 0')
 
 # int
 res.int <- brms::brm(resilience ~ secondary*gender + secondary*education + work_location + age+
@@ -272,6 +280,9 @@ freq.res.int <- lmer(resilience ~ secondary*gender + secondary*education + work_
 
 freq.res.00 <- lm(resilience ~ secondary+ gender + education + work_location + age+
                      SSS_faml+ relationship_status,data=data.filtered)
+
+EMAtools::lme.dscore(freq.res.1,data=data.filtered,'lme4')
+conf.res <- confint(freq.res.1)
 
 # icc
 performance::icc(freq.res.1)
