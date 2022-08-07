@@ -130,3 +130,10 @@ res.conf <- confint(lmer.res.2)
 
 # result save
 save.image(file='stress_H3a.RData')
+
+# R2s
+library(MuMIn)
+
+# pss
+MuMIn::r.squaredGLMM(lmer.pss.2)
+MuMIn::r.squaredGLMM(lmer.res.2)

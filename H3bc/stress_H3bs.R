@@ -143,6 +143,10 @@ freq.pss.2 <- lmer(pss ~ secondary+ work_location + age+
                      data=data.filtered)
 conft.pss.2<-confint(freq.pss.2)
 
+# mumin
+library(MuMIn)
+MuMIn::r.squaredGLMM(freq.pss.2)
+
 freq.pss.1 <- lmer(pss ~ secondary+ work_location + age+
                      SSS_faml+ relationship_status+ education+
                      (1|residing_country),
@@ -283,6 +287,7 @@ freq.res.00 <- lm(resilience ~ secondary+ gender + education + work_location + a
 
 EMAtools::lme.dscore(freq.res.1,data=data.filtered,'lme4')
 conf.res <- confint(freq.res.1)
+r.squaredGLMM(freq.res.1)
 
 # icc
 performance::icc(freq.res.1)
