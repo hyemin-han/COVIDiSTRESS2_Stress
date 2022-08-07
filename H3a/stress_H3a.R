@@ -142,3 +142,14 @@ MuMIn::r.squaredGLMM(lmer.res.2)
 library(car)
 vif(lmer.pss.2)
 vif(lmer.res.2)
+
+# linear assumption check
+library(ggfortify)
+
+test.pss <- lm(pss ~ primary_stressor_avg + gender + education + work_location + age+
+                 SSS_faml+ relationship_status, data.filtered)
+autoplot(test.pss, label=F)
+
+test.brs <- lm(resilience ~ primary_stressor_avg + gender + education + work_location + age+
+                 SSS_faml+ relationship_status, data.filtered)
+autoplot(test.brs, label=F)

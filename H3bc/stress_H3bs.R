@@ -293,3 +293,14 @@ r.squaredGLMM(freq.res.1)
 performance::icc(freq.res.1)
 
 save.image(file='Vaccine_H3bs.RData')
+
+# linearity
+library(ggfortify)
+
+test.pss <- lm(pss ~ secondary*identity+ gender + education + work_location + age+
+                 SSS_faml+ relationship_status, data.filtered)
+autoplot(test.pss, label=F)
+
+test.res <- lm(resilience ~ secondary*identity+ gender + education + work_location + age+
+                 SSS_faml+ relationship_status, data.filtered)
+autoplot(test.res, label=F)

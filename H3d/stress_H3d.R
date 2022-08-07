@@ -200,3 +200,17 @@ hypothesis(med.res.2, 'resilience_identity>0') # Inf
 hypothesis(med.res.2, 'resilience_sps>0') # Inf
 
 save.image('stress_H3d.RData')
+
+# linearity
+library(ggfortify)
+test.pss <- lm(pss ~ identity+ sps+gender + education + work_location + age+
+                  SSS_faml+ relationship_status, data.filtered)
+autoplot(test.pss,label=F)
+test.brs <- lm(resilience ~ identity+ sps+gender + education + work_location + age+
+                 SSS_faml+ relationship_status, data.filtered)
+autoplot(test.brs,label=F)
+
+# VIF
+library(car)
+vif(test.pss)
+vif(test.brs)
