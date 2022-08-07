@@ -63,6 +63,12 @@ freq.pss.int <- lmer(pss ~ secondary*identity+ gender + education + work_locatio
                        SSS_faml+ relationship_status+
                        (1+secondary+identity|residing_country),data.filtered)
 conf.pss <- confint(freq.pss.int)
+
+# R2
+library(MuMIn)
+
+r.squaredGLMM(freq.pss.int)
+
 freq.pss.int.1 <- lmer(pss ~ secondary*identity+ gender + education + work_location + age+
                        SSS_faml+ relationship_status+
                        (1|residing_country),data.filtered)
@@ -101,6 +107,8 @@ bf.pss.id.21 <- bayes_factor(pss.id.2,pss.id.1)
 
 # 2 best
 hypothesis(pss.id.2,'identity<0')
+
+performance::icc(freq.pss.int)
 
 
 # only with the main effect of stressor
@@ -141,13 +149,27 @@ res.int <- brms::brm(resilience ~ secondary*identity+ gender + education + work_
                    cores=4,chains=4, save_pars = save_pars(all = T),
                    sample_prior ='yes', seed=1660415,prior=prior.coef)
 
+res.1 <- brms::brm(resilience ~ secondary+ gender + education + work_location + age+
+                     SSS_faml+ relationship_status+
+                     (1|residing_country),
+                   data=data.filtered, family = gaussian(),
+                   cores=4,chains=4, save_pars = save_pars(all = T),
+                   sample_prior ='yes', seed=1660415,prior=prior.coef)
+res.int.1<- brms::brm(resilience ~ secondary*identity+ gender + education + work_location + age+
+                        SSS_faml+ relationship_status+
+                        (1|residing_country),
+                      data=data.filtered, family = gaussian(),
+                      cores=4,chains=4, save_pars = save_pars(all = T),
+                      sample_prior ='yes', seed=1660415,prior=prior.coef)
+
 # bfs
 bf.res.int <- bayes_factor(res.int,res.2,log=T)
+bf.res.int1 <- bayes_factor(res.int.1,res.1,log=T)
 
 # hypothesis
-hypothesis(res.int, 'secondary < 0')
-hypothesis(res.int, 'identity > 0')
-hypothesis(res.int, 'secondary:identity > 0')
+hypothesis(res.int.1, 'secondary < 0')
+hypothesis(res.int.1, 'identity > 0')
+hypothesis(res.int.1, 'secondary:identity > 0')
 
 # bfs
 #bf.res.id.10 <- bayes_factor(res.id.1,res.id.0)
@@ -166,7 +188,10 @@ freq.res.int1 <- lmer(resilience ~ secondary*identity+ gender + education + work
                        SSS_faml+ relationship_status+
                        (1|residing_country),data.filtered)
 lme.dscore(freq.res.int1,data.filtered,'lme4')
-conf.res <- confint(freq.res.int)
+conf.res <- confint(freq.res.int1)
+
+r.squaredGLMM(freq.res.int1)
+performance::icc(freq.res.int1)
 
 ## H3db
 
@@ -237,3 +262,10 @@ bayestestR::mediation(med.res.1)
 
 save.image('Vaccine_H3_groupid.RData')
 
+# VIF check
+library(car)
+pss.vif <- car::vif(freq.pss.int)
+res.vif <- car::vif(freq.res.int1)
+library(effectsize)
+effectsize::interpret_vif(pss.vif[,1])
+effectsize::interpret_vif(res.vif[,1])

@@ -137,3 +137,8 @@ library(MuMIn)
 # pss
 MuMIn::r.squaredGLMM(lmer.pss.2)
 MuMIn::r.squaredGLMM(lmer.res.2)
+
+# vif
+library(car)
+vif(lmer.pss.2)
+vif(lmer.res.2)
