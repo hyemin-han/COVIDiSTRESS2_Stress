@@ -304,3 +304,40 @@ autoplot(test.pss, label=F)
 test.res <- lm(resilience ~ secondary*identity+ gender + education + work_location + age+
                  SSS_faml+ relationship_status, data.filtered)
 autoplot(test.res, label=F)
+
+
+# each demographics. Main effect test from pss.2
+hypothesis(pss.2,'genderMale<0')
+hypothesis(pss.2,'SSS_faml<0')
+hypothesis(res.1,'genderMale>0')
+hypothesis(res.1,'SSS_faml>0')
+
+
+
+# bayesian test of secondary stressor ~ gender / ses
+secondary.gender.0 <- brm(secondary~(1|residing_country),
+                           data=data.filtered, family = gaussian(),
+                           cores=4,chains=4, save_pars = save_pars(all = T),
+                           sample_prior ='yes', seed=1660415)
+secondary.gender.1<- brm(secondary~gender+(1|residing_country),
+                          data=data.filtered, family = gaussian(),
+                          cores=4,chains=4, save_pars = save_pars(all = T),
+                          sample_prior ='yes', seed=1660415,prior=prior.coef)
+
+secondary.ses.1 <- brm(secondary~SSS_faml+(1|residing_country),
+                       data=data.filtered, family = gaussian(),
+                       cores=4,chains=4, save_pars = save_pars(all = T),
+                       sample_prior ='yes', seed=1660415,prior=prior.coef)
+secondary.both.1 <-  brm(secondary~gender+SSS_faml+(1|residing_country),
+                         data=data.filtered, family = gaussian(),
+                         cores=4,chains=4, save_pars = save_pars(all = T),
+                         sample_prior ='yes', seed=1660415,prior=prior.coef)
+
+# comparison
+bf.0.gender <- bayes_factor(secondary.gender.1,secondary.gender.0,log=T) #709.58980
+bf.0.ses <- bayes_factor(secondary.ses.1,secondary.gender.0,log=T) # 21.46429
+bf.0.both <- bayes_factor(secondary.both.1,secondary.gender.0,log=T) # 729.55055
+
+# both best
+hypothesis(secondary.both.1,'SSS_faml<0')
+hypothesis(secondary.both.1,'genderMale<0')
