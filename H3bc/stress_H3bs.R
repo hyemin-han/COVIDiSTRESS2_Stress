@@ -138,7 +138,7 @@ bf.edu.occu <- bayes_factor(pss.int.edu.occu,pss.2)
 
 # double check with freq
 freq.pss.2 <- lmer(pss ~ secondary+ work_location + age+
-                       SSS_faml+ relationship_status+ education+
+                       SSS_faml+ relationship_status+ education+ gender+
                        (1+secondary|residing_country),
                      data=data.filtered)
 conft.pss.2<-confint(freq.pss.2)
@@ -148,7 +148,7 @@ library(MuMIn)
 MuMIn::r.squaredGLMM(freq.pss.2)
 
 freq.pss.1 <- lmer(pss ~ secondary+ work_location + age+
-                     SSS_faml+ relationship_status+ education+
+                     SSS_faml+ relationship_status+ education+gender+
                      (1|residing_country),
                    data=data.filtered)
 EMAtools::lme.dscore(freq.pss.1,data.filtered,'lme4')
@@ -312,7 +312,9 @@ hypothesis(pss.2,'SSS_faml<0')
 hypothesis(res.1,'genderMale>0')
 hypothesis(res.1,'SSS_faml>0')
 
-
+# frequentist
+summary(freq.pss.2)
+summary(freq.res.1)
 
 # bayesian test of secondary stressor ~ gender / ses
 secondary.gender.0 <- brm(secondary~(1|residing_country),
