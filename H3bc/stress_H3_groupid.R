@@ -269,3 +269,36 @@ res.vif <- car::vif(freq.res.int1)
 library(effectsize)
 effectsize::interpret_vif(pss.vif[,1])
 effectsize::interpret_vif(res.vif[,1])
+
+
+#### No random
+# pss: 2 best
+pss.id.n <- brms::brm(pss ~ identity+ gender + education + work_location + age+
+                        SSS_faml+ relationship_status,
+                      data=data.filtered, family = gaussian(),
+                      cores=4,chains=4, save_pars = save_pars(all = T),
+                      sample_prior ='yes', seed=1660415,prior=prior.coef)
+# comparison
+pss.n0 <- bayes_factor(pss.id.n, pss.id.0,log=F) # -168.70886
+pss.2n <- log(bf.pss.id.20$bf / pss.n0$bf) # 320.7935 # extremely better with randoms
+# testing
+hypothesis(pss.id.n,'identity<0')
+'
+Hypothesis Tests for class b:
+      Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star
+1 (identity) < 0    -0.04      0.01    -0.06    -0.02    1332.33         1    *'
+# did not change significantly
+
+## RES: 1 with int best
+
+res.int.n <- brms::brm(resilience ~ secondary*identity+ gender + education + work_location + age+
+                        SSS_faml+ relationship_status,
+                      data=data.filtered, family = gaussian(),
+                      cores=4,chains=4, save_pars = save_pars(all = T),
+                      sample_prior ='yes', seed=1660415,prior=prior.coef)
+# comparison
+bf.res.int.n1 <- bayes_factor(res.int.n,res.int.1,log=T) #bf.res.int.n1 # bette 1
+# hypothesis
+hypothesis(res.int.n, 'secondary < 0') # Inf
+hypothesis(res.int.n, 'identity > 0') # Inf
+hypothesis(res.int.n, 'secondary:identity > 0') # .68?
