@@ -119,6 +119,8 @@ hypothesis(med.pss.2,'secondary_SSS_faml<0')
 hypothesis(med.pss.2,'pss_manTRUE<0')
 # ses -> pss
 hypothesis(med.pss.2,'pss_SSS_faml<0')
+# direct
+hypothesis(med.pss.2,'pss_secondary>0')
 
 # all significant
 # partial mediation
@@ -222,6 +224,8 @@ hypothesis(med.res.2,'secondary_SSS_faml<0')
 hypothesis(med.res.2,'resilience_manTRUE>0')
 # ses -> brs
 hypothesis(med.res.2,'resilience_SSS_faml>0')
+# additional
+hypothesis(med.res.2,'resilience_secondary<0')
 
 # all significant
 # partial mediation
