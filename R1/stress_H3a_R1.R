@@ -165,6 +165,8 @@ pss.2n <- brms::brm(pss ~ primary_stressor_avg + gender + education + work_locat
                     sample_prior ='yes', seed=1660415,prior=prior.coef)
 
 pss.2nb <- bayes_factor(pss.2,pss.2n, log=TRUE) # 274.14801
+pss.1nb <- bayes_factor(pss.1,pss.2n, log=TRUE) # 262.76269
+pss.0nb <- bayes_factor(pss.0,pss.2n, log=TRUE) # 638.30086
 hypothesis(pss.2n,'primary_stressor_avg > 0')
 '                Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star
 1 (primary_stressor... > 0     0.23      0.01     0.22     0.25        Inf         1    *'
@@ -179,9 +181,39 @@ res.n <- brms::brm(resilience ~ primary_stressor_avg + gender + education + work
 
 res.2n <- bayes_factor(res.2,res.n, log = T) # 224.58096
 res.1n <- bayes_factor(res.1,res.n, log = T) # 224.09747
+res.0n <- bayes_factor(res.0,res.n, log = T) #378.82987
 hypothesis(res.n,'primary_stressor_avg < 0')
 
 #                Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star
 # 1 (primary_stressor... < 0    -0.12      0.01    -0.14     -0.1        Inf         1    *
 
 ## both results did not change even without random effects!
+
+
+# sensitivity check
+# normal distribution prior
+prior.coef1 <- brms::prior(normal(0.,1000000),class='b')
+pss.2.norm <- brms::brm(pss ~ primary_stressor_avg + gender + education + work_location + age+
+                     SSS_faml+ relationship_status+
+                     (1+primary_stressor_avg|residing_country),
+                   data=data.filtered, family = gaussian(),
+                   cores=4,chains=4, save_pars = save_pars(all = T),
+                   sample_prior ='yes', seed=1660415,prior=prior.coef1)
+res.2.norm <- brms::brm(resilience ~ primary_stressor_avg + gender + education + work_location + age+
+                     SSS_faml+ relationship_status+
+                     (1+primary_stressor_avg|residing_country),
+                   data=data.filtered, family = gaussian(),
+                   cores=4,chains=4, save_pars = save_pars(all = T),
+                   sample_prior ='yes', seed=1660415,prior=prior.coef1)
+# test
+hypothesis(pss.2.norm, 'primary_stressor_avg > 0')
+'
+Hypothesis Tests for class b:
+                Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star
+1 (primary_stressor... > 0     0.23      0.02      0.2     0.26        Inf         1    *'
+hypothesis(res.2.norm,'primary_stressor_avg<0')
+'Hypothesis Tests for class b:
+                Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star
+1 (primary_stressor... < 0    -0.15      0.02    -0.17    -0.12        Inf         1    *
+'
+### ALL SAME

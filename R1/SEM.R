@@ -42,3 +42,13 @@ SS ~~ GID
 fit.pss <- sem(model.pss,data=data.filtered,estimator='DWLS')
 fitmeasures(fit.pss)
 
+
+fit.both <- sem(model.both,data=data.filtered,estimator='dwls')
+fitmeasures(fit.both)
+
+### correlation (Reviewer 3)
+library(psych)
+# variable list
+vars <- c('primary_stressor_avg','secondary','sps','identity',
+          'pss','resilience')
+cors<-corr.test(data.filtered[,vars])

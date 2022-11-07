@@ -101,7 +101,26 @@ hypothesis(med.pss.2, 'pss_sps<0') # Inf
 
 save.image('stress_H3d.RData')
 
+# just in case frequentist
+library(lmerTest)
+library(EMAtools)
 
+pss.test <- lmer(pss ~ identity+ sps+gender + education + work_location + age+
+  SSS_faml+ relationship_status+
+  (1+identity+sps|residing_country),data=data.filtered)
+pss.test1 <- lmer(pss ~ identity+ sps+gender + education + work_location + age+
+                   SSS_faml+ relationship_status+
+                   (1|residing_country),data=data.filtered)
+EMAtools::lme.dscore(pss.test1,data.filtered,'lme4')
+
+pss.med.test <- lmer(sps ~ identity+ gender + education + work_location + age+
+                       SSS_faml+ relationship_status+
+                       (1+identity|residing_country),data.filtered)
+pss.med.test1 <- lmer(sps ~ identity+ gender + education + work_location + age+
+                       SSS_faml+ relationship_status+
+                       (1|residing_country),data.filtered)
+
+lme.dscore(pss.med.test1,data.filtered,'lme4')
 
 ####
 # 2. resilience
@@ -216,6 +235,17 @@ vif(test.pss)
 vif(test.brs)
 
 
+# just in case frequentist
+res.freq <- lmer(resilience ~ identity+ sps+gender + education + work_location + age+
+               SSS_faml+ relationship_status+
+               (1+identity+sps|residing_country),data.filtered)
+res.freq1 <- lmer(resilience ~ identity+ sps+gender + education + work_location + age+
+                   SSS_faml+ relationship_status+
+                   (1|residing_country),data.filtered)
+lme.dscore(res.freq1,data.filtered,'lme4')
+
+
+res.freq.med <- 
 
 ### Both without random effects
 # PSS
@@ -234,7 +264,9 @@ med.pss.n = brm(
 )
 # compare
 bf.pss.n0 <- bayes_factor(med.pss.n,med.pss.0,log = T) # 14883.20380
-bf.pss.2n <- bf.pss.20$bf - bf.pss.n0$bf # 660.2081
+bf.pss.2n <-  bayes_factor(med.pss.n,med.pss.2,log = T) # -659.92765
+bf.pss.1n <-  bayes_factor(med.pss.n,med.pss.1,log = T) # -651.17623
+
 # still, random effect better
 
 # testing
@@ -257,8 +289,40 @@ med.res.n = brm(
 # bf compare
 bf.res.n0 <- bayes_factor(med.res.n,med.res.0,log = T) # 12668.13651
 bf.res.2n <- bf.res.20$bf - bf.res.n0$bf # 242.7064 # still better
+bf.res.2n <- bayes_factor(med.res.n,med.res.2,log = T) # -243.92886
+bf.res.1n <- bayes_factor(med.res.n,med.res.1,log = T) # -243.92886
 
 # testing
 hypothesis(med.res.n, 'sps_identity>0') # Inf
 hypothesis(med.res.n, 'resilience_identity>0') # Inf
 hypothesis(med.res.n, 'resilience_sps>0') # Inf
+
+
+###
+# normal distribution
+prior.coef1 <- brms::prior(normal(0.,1000000),class='b')
+med.res.2.normal = brm(
+  model.mediator.2 + model.res.2 + set_rescor(F),
+  data=data.filtered,
+  family = gaussian(),
+  cores=4,chains=4, save_pars = save_pars(all = T),
+  sample_prior ='yes', seed=1660415,prior=prior.coef1
+)
+med.pss.2.normal = brm(
+  model.mediator.2 + model.pss.2 + set_rescor(F),
+  data=data.filtered,
+  family = gaussian(),
+  cores=4,chains=4, save_pars = save_pars(all = T),
+  sample_prior ='yes', seed=1660415,prior=prior.coef1
+)
+
+hypothesis(med.res.2.normal, 'sps_identity>0') # Inf
+hypothesis(med.res.2.normal, 'resilience_identity>0') # Inf
+hypothesis(med.res.2.normal, 'resilience_sps>0') # Inf
+
+hypothesis(med.pss.2.normal, 'sps_identity<0') # Inf
+hypothesis(med.pss.2.normal, 'pss_identity<0') # Inf
+hypothesis(med.pss.2.normal, 'pss_sps<0') # Inf
+
+
+### ALL SAME

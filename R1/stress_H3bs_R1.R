@@ -198,7 +198,7 @@ res.2 <- brms::brm(resilience ~ secondary+ gender + education + work_location + 
 # bayes factors
 res.10 <- bayes_factor(res.1, res.0)
 res.20 <- bayes_factor(res.2, res.0)
-res.21 <- bayes_factor(res.2,res.1)
+res.21 <- bayes_factor(res.2,res.1) # -2.92144
 
 # 1 is better, so random intercept model will be used
 hypothesis(res.1, 'secondary < 0')
@@ -355,6 +355,8 @@ pss.n <- brms::brm(pss ~ secondary+ gender + education + work_location + age+
 # comparison
 pss.n0 <- bayes_factor(pss.n,pss.0,log=T                       ) # 1959.67492
 pss.2n <- bayes_factor(pss.2, pss.n, log=T) # 217.40655
+pss.1n <- bayes_factor(pss.1, pss.n, log=T) # 199.23953
+
 # still better
 # testing
 hypothesis(pss.n,'secondary>0')
@@ -371,10 +373,41 @@ res.n <- brms::brm(resilience ~ secondary+ gender + education + work_location + 
                    sample_prior ='yes', seed=1660415,prior=prior.coef)
 # comparison
 res.n0 <- bayes_factor(res.n,res.0, log=T) # 1382.48734
-res.1n <- res.10$bf - res.n0$bf # Inf # better
+res.1n <- bayes_factor(res.1,res.n, log=T) # 167.22297
+res.2n <- bayes_factor(res.2,res.n, log=T) # 164.46898
+
 # testing
 hypothesis(res.n,'secondary<0')
 '
 Hypothesis Tests for class b:
        Hypothesis Estimate Est.Error CI.Lower CI.Upper Evid.Ratio Post.Prob Star
 1 (secondary) < 0     -0.2      0.01    -0.22    -0.18        Inf         1    *' # same
+
+
+
+#### sensivity check
+prior.coef1 <- brms::prior(normal(0.,1000000),class='b')
+
+pss.2.norm <- brms::brm(pss ~ secondary+ gender + education + work_location + age+
+                     SSS_faml+ relationship_status+
+                     (1+secondary|residing_country),
+                   data=data.filtered, family = gaussian(),
+                   cores=4,chains=4, save_pars = save_pars(all = T),
+                   sample_prior ='yes', seed=1660415,prior=prior.coef1)
+
+hypothesis(pss.2.norm,'secondary>0') # Inf
+hypothesis(pss.2.norm,'genderMale < 0') # Inf
+hypothesis(pss.2.norm,'SSS_faml<0') # Inf
+
+res.2.norm <- brms::brm(pss ~ secondary+ gender + education + work_location + age+
+                     SSS_faml+ relationship_status+
+                     (1+secondary|residing_country),
+                   data=data.filtered, family = gaussian(),
+                   cores=4,chains=4, save_pars = save_pars(all = T),
+                   sample_prior ='yes', seed=1660415,prior=prior.coef1)
+
+hypothesis(res.2.norm,'secondary<0') # Inf
+hypothesis(res.2.norm,'genderMale > 0') # Inf
+hypothesis(res.2.norm,'SSS_faml>0') # Inf
+
+# all same
