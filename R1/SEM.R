@@ -16,7 +16,9 @@ SS =~ secondary_stressors__1 + secondary_stressors__2+secondary_stressors__3+
   secondary_stressors__4
 
 RES =~ resilience_1 + resilience_2+resilience_3+
-  resilience_4+resilience_5+resilience_6 + GID + SS
+  resilience_4+resilience_5+resilience_6 + GID + SS+
+  sps+gender + education + work_location + age+
+                    SSS_faml+ relationship_status
   
 SS ~~ GID
 '
@@ -34,7 +36,9 @@ SS =~ secondary_stressors__1 + secondary_stressors__2+secondary_stressors__3+
 PSS =~ perceived_stress_sca_1 + perceived_stress_sca_2+
   perceived_stress_sca_3 + perceived_stress_sca_4 + perceived_stress_sca_5+
   perceived_stress_sca_6 + perceived_stress_sca_7 + perceived_stress_sca_8+
-  perceived_stress_sca_9 + perceived_stress_sca_10 + GID + SS
+  perceived_stress_sca_9 + perceived_stress_sca_10 + GID + SS+
+  sps+gender + education + work_location + age+
+                    SSS_faml+ relationship_status
   
 SS ~~ GID
 '
@@ -43,8 +47,6 @@ fit.pss <- sem(model.pss,data=data.filtered,estimator='DWLS')
 fitmeasures(fit.pss)
 
 
-fit.both <- sem(model.both,data=data.filtered,estimator='dwls')
-fitmeasures(fit.both)
 
 ### correlation (Reviewer 3)
 library(psych)
