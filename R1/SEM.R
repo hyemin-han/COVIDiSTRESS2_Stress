@@ -79,3 +79,52 @@ fig.res <- semPaths(fit.res, whatLabels = 'est',
                     sizeMan=5,edge.label.cex = 1.5,
                     style='ram',label.prop=1.5)
 
+# demographics
+countries <- length(n.include.c)
+
+# age M/SD
+ages <- matrix(nrow=countries, ncol = 2)
+# sex
+# male female other %
+gender <- matrix(nrow = countries, ncol=3)
+# education
+# PhD/BA/College/12/9/6/None
+education <- matrix(nrow=countries,ncol=7)
+for (i in 1:countries){
+  current <- data.filtered[data.filtered$residing_country == country.include[i],]
+  ages[i,1] <- mean(current$age, na.rm = T)
+  ages[i,2] <- sd(current$age, na.rm=T)
+  current.gender <- table(current$gender)
+  gender.tot <- sum(current.gender)
+  # male female other
+  gender[i,1] <- sum(current$gender=='Male',na.rm = T)/gender.tot*1
+  gender[i,2] <- sum(current$gender=='Female',na.rm = T)/gender.tot*1
+  gender[i,3] <- sum(current$gender=='Other/Would rather not say',na.rm = T)/
+    gender.tot*1
+  # education
+  current.educ <- table(current$education)
+  educ.tot <- sum(current.educ)
+  # phd to non
+  education[i,1 ] <- sum(current$education=='PhD / Doctorate',na.rm = T)/
+    educ.tot*1
+  education[i,2 ] <- sum(current$education=='University degree (e.g., MA, MSc, BA, BSc)',na.rm = T)/
+    educ.tot*1
+  education[i,3 ] <- sum(current$education=='Some University or equivalent \n(still ongoing, or completed a module or more, but did not graduate)',na.rm = T)/
+    educ.tot*1
+  education[i,4 ] <- sum(current$education=='Up to 12 years of school',na.rm = T)/educ.tot
+  education[i,5 ] <- sum(current$education=='Up to 9 years of school',na.rm = T)/educ.tot*1
+  education[i,6 ] <- sum(current$education=='Up to 6 years of school',na.rm = T)/educ.tot
+  education[i,7 ] <- sum(current$education=='None',na.rm = T)/educ.tot
+}
+gender[is.na(gender)] <- 0
+education[is.na(education)] <-0
+# summary
+TABLE <- cbind(ages,gender,education)
+TABLE <- as.data.frame(TABLE)
+rownames(TABLE)<- country.include
+
+# whole dataset
+mean(data.filtered$age,na.rm=T)
+sd(data.filtered$age,na.rm=T)
+table(data.filtered$gender)/sum(table(data.filtered$gender))
+table(data.filtered$education)/sum(table(data.filtered$education))
